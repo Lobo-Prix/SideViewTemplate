@@ -19,8 +19,12 @@ public class Script : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 	}
 
+    public int scaffold_col = 0;
+    public int left_col = 0;
+    public int right_col = 0;
     bool IsGrand()
     {
+        return scaffold_col > 0;
         //지금 모서리 끝의 한가운데 있으면, 두 ray는 양끝에 있어서 Ground판정이 안뜬다.
         //Player Collider 바로밑에 겹치지 않게 Trigger를 깔아서 Enter시 +1, Exit시 -1해서 0이면 충돌 없음, 1이면 충돌있음으로 처리해야할듯.(Ray가 아니라 영역으로 처리하는것임)
         //물론 Trigger는 직사각형 영역이지만, 세로높이는 매우 작게해야 이상하지 않을것이다.
@@ -28,6 +32,17 @@ public class Script : MonoBehaviour
         Debug.DrawRay(transform.position + Vector3.left * tmp, Vector2.down * 0.1f, Color.green, 1);
         Debug.DrawRay(transform.position + Vector3.right * tmp, Vector2.down * 0.1f, Color.green, 1);
         return Physics2D.Raycast(transform.position + Vector3.left * tmp, Vector2.down, 0.1f) || Physics2D.Raycast(transform.position + Vector3.right * tmp, Vector2.down, 0.1f);
+    }
+    bool LeftColl()
+    {
+        return left_col > 0;
+        Physics2D.Raycast(transform.position, Vector2.left, 0.4f);
+    }
+
+    bool RightColl()
+    {
+        return right_col > 0;
+        Physics2D.Raycast(transform.position, Vector2.right, 0.4f);
     }
 
     void Update()
@@ -42,8 +57,8 @@ public class Script : MonoBehaviour
 
         float lrbias = Input.GetAxis("Horizontal");
         //if jump control should not allow, move this code to not jump block.
-        if (lrbias > 0 && Physics2D.Raycast(transform.position, Vector2.right, 0.4f)
-            || lrbias < 0 && Physics2D.Raycast(transform.position, Vector2.left, 0.4f))
+        if (lrbias > 0 && RightColl() && !IsGrand()
+            || lrbias < 0 && LeftColl() && !IsGrand())
             ;
         else
             rb.velocity = new Vector2(lrbias * 2, rb.velocity.y);
