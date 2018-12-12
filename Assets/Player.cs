@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Script : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public Sprite[] idle, walk, jump;
     SpriteRenderer sr;
