@@ -6,7 +6,7 @@ public enum ScaffoldPos { bottom, left, right }
 
 public class Scaffold : MonoBehaviour {
 
-    public Script entity;
+    public Player entity;
     public ScaffoldPos pos;
 
     private void OnTriggerEnter2D(Collider2D collision)
