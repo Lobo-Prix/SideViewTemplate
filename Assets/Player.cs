@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public Sprite[] idle, walk, jump;
+    public Sprite[] idle, walk, jump, attack, hurt;
     SpriteRenderer sr;
     Sprite[] cur_anim;
     int idx = 0;
@@ -18,6 +18,22 @@ public class Player : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
 	}
+
+    float prev_keydown_time, cur_keydown_time = -1;
+    bool pright = true, cright = true;
+    bool IsRunning()
+    {
+        bool rdown = Input.GetKeyDown(KeyCode.RightArrow);
+        bool ldown = Input.GetKeyDown(KeyCode.LeftArrow);
+        if (rdown || ldown)
+        {
+            prev_keydown_time = cur_keydown_time;
+            cur_keydown_time = Time.time;
+            pright = cright;
+            cright = rdown;
+        }
+        return cur_keydown_time - prev_keydown_time < 0.2f && pright == cright;
+    }
 
     public int scaffold_col = 0;
     public int left_col = 0;
@@ -45,15 +61,23 @@ public class Player : MonoBehaviour
         Physics2D.Raycast(transform.position, Vector2.right, 0.4f);
     }
 
+    bool attacking = false;
+    void AttackingRelease() { attacking = false; }
+    bool hurting = false;
+    void HurtingRelease() { hurting = false; }
+
     void Update()
     {
+        if (hurting)
+            return;
+
         float lrbias = Input.GetAxis("Horizontal");
         //if jump control should not allow, move this code to not jump block.
         if (lrbias > 0 && RightColl() && !IsGrand()
             || lrbias < 0 && LeftColl() && !IsGrand())
             ;
         else
-            rb.velocity = new Vector2(lrbias * 2, rb.velocity.y);
+            rb.velocity = new Vector2(lrbias * 2 * (IsRunning() ? 2 : 1), rb.velocity.y);
 
         //jumping
         if (!IsGrand())
@@ -95,6 +119,22 @@ public class Player : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, 10);
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.LeftControl) && !attacking)
+        {
+            SetAnim(attack);
+            attacking = true;
+            Invoke("AttackingRelease", 0.5f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z) && !hurting)
+        {
+            SetAnim(hurt);
+            hurting = true;
+            Invoke("HurtingRelease", 0.2f);
+            rb.gravityScale = 1;
+            rb.velocity = new Vector2(4 * (sr.flipX ? 1 : -1), 2);
+        }
     }
 	
 	void Animate () {
@@ -103,6 +143,10 @@ public class Player : MonoBehaviour
 
     void SetAnim(Sprite[] anim)
     {
+        if (attacking)
+        {
+            return;
+        }
         if (cur_anim == anim)
             return;
         cur_anim = anim;
