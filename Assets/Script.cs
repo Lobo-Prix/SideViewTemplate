@@ -47,14 +47,6 @@ public class Script : MonoBehaviour
 
     void Update()
     {
-        if (IsGrand())
-        {
-            rb.gravityScale = 0;
-            rb.velocity = new Vector2(rb.velocity.x, 0);
-        }
-        else
-            rb.gravityScale = 1;
-
         float lrbias = Input.GetAxis("Horizontal");
         //if jump control should not allow, move this code to not jump block.
         if (lrbias > 0 && RightColl() && !IsGrand()
@@ -63,9 +55,11 @@ public class Script : MonoBehaviour
         else
             rb.velocity = new Vector2(lrbias * 2, rb.velocity.y);
 
-        //jump, this method has a little dangers. while jump max pos, velocity.y can be 0. Imagine parabola.
-        if (rb.velocity.y != 0)
+        //jumping
+        if (!IsGrand())
         {
+            rb.gravityScale = 1;
+
             SetAnim(jump);
             if (rb.velocity.y > 0)
                 idx = 0;
@@ -80,6 +74,9 @@ public class Script : MonoBehaviour
         //not jump
         else
         {
+            rb.gravityScale = 0;
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+
             if (lrbias > 0)
             {
                 SetAnim(walk);
