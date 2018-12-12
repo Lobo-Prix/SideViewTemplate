@@ -66,8 +66,11 @@ public class Script : MonoBehaviour
         //jump, this method has a little dangers. while jump max pos, velocity.y can be 0. Imagine parabola.
         if (rb.velocity.y != 0)
         {
-            cur_anim = jump;
-            idx = 0;
+            SetAnim(jump);
+            if (rb.velocity.y > 0)
+                idx = 0;
+            else
+                idx = 1;
 
             if (lrbias > 0)
                 sr.flipX = false;
@@ -79,30 +82,17 @@ public class Script : MonoBehaviour
         {
             if (lrbias > 0)
             {
-                if (cur_anim != walk)
-                {
-                    cur_anim = walk;
-                    idx = 0;
-                }
+                SetAnim(walk);
                 sr.flipX = false;
             }
             else if (lrbias < 0)
             {
-                if (cur_anim != walk)
-                {
-                    cur_anim = walk;
-                    idx = 0;
-                }
+                SetAnim(walk);
                 sr.flipX = true;
             }
             else
-            {
-                if (cur_anim != idle)
-                {
-                    cur_anim = idle;
-                    idx = 0;
-                }
-            }
+                SetAnim(idle);
+
             if (Input.GetButton("Jump") && rb.velocity.y == 0 && IsGrand())
             {
                 rb.velocity = new Vector2(rb.velocity.x, 10);
@@ -113,4 +103,12 @@ public class Script : MonoBehaviour
 	void Animate () {
         sr.sprite = cur_anim[idx = (idx+1) % cur_anim.Length];
 	}
+
+    void SetAnim(Sprite[] anim)
+    {
+        if (cur_anim == anim)
+            return;
+        cur_anim = anim;
+        idx = 0;
+    }
 }
