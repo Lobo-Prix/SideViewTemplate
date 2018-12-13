@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : Actor
 {
     public Sprite[] idle, walk, jump, attack, hurt, jattack;
+    public Bullet pfBullet;
     SpriteRenderer sr;
     Sprite[] cur_anim;
     int idx = 0;
@@ -132,6 +133,12 @@ public class Player : MonoBehaviour
                 attacking = true;
                 Invoke("AttackingRelease", 0.5f);
                 move_speed = 0.5f;
+                Bullet b = Instantiate(pfBullet);
+                b.GetComponent<Rigidbody2D>().velocity = new Vector2(sr.flipX ? -3 : 3, 0);
+                b.from = this;
+                b.lifetime = 0.5f;
+                b.target_component = "Enemy";
+                b.transform.position = transform.position + new Vector3(sr.flipX ? -0.4f : 0.4f, 0.7f, 0);
             }
             else
             {
@@ -141,15 +148,6 @@ public class Player : MonoBehaviour
                 rb.gravityScale = 0.8f;
                 rb.velocity = new Vector2(6 * (sr.flipX ? -1 : 1), 3/*rb.velocity.y*/);
             }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z) && !hurting)
-        {
-            SetAnim(hurt);
-            hurting = true;
-            Invoke("HurtingRelease", 0.2f);
-            rb.gravityScale = 1;
-            rb.velocity = new Vector2(4 * (sr.flipX ? 1 : -1), 2);
         }
     }
 	
@@ -167,5 +165,14 @@ public class Player : MonoBehaviour
             return;
         cur_anim = anim;
         idx = 0;
+    }
+
+    public override void AddDamage()
+    {
+        SetAnim(hurt);
+        hurting = true;
+        Invoke("HurtingRelease", 0.2f);
+        rb.gravityScale = 1;
+        rb.velocity = new Vector2(4 * (sr.flipX ? 1 : -1), 2);
     }
 }
