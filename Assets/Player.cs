@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public Sprite[] idle, walk, jump, attack, hurt;
+    public Sprite[] idle, walk, jump, attack, hurt, jattack;
     SpriteRenderer sr;
     Sprite[] cur_anim;
     int idx = 0;
@@ -61,14 +61,18 @@ public class Player : MonoBehaviour
         Physics2D.Raycast(transform.position, Vector2.right, 0.4f);
     }
 
+    float move_speed = 1;
+
     bool attacking = false;
-    void AttackingRelease() { attacking = false; }
+    void AttackingRelease() { attacking = false;move_speed = 1; }
     bool hurting = false;
     void HurtingRelease() { hurting = false; }
+    bool jattacking = false;
+    void JAttackingRelease() { jattacking = false; }
 
     void Update()
     {
-        if (hurting)
+        if (hurting || jattacking)
             return;
 
         float lrbias = Input.GetAxis("Horizontal");
@@ -77,7 +81,7 @@ public class Player : MonoBehaviour
             || lrbias < 0 && LeftColl() && !IsGrand())
             ;
         else
-            rb.velocity = new Vector2(lrbias * 2 * (IsRunning() ? 2 : 1), rb.velocity.y);
+            rb.velocity = new Vector2(lrbias * 2 * move_speed * (IsRunning() ? 2 : 1), rb.velocity.y);
 
         //jumping
         if (!IsGrand())
@@ -122,9 +126,21 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftControl) && !attacking)
         {
-            SetAnim(attack);
-            attacking = true;
-            Invoke("AttackingRelease", 0.5f);
+            if (Mathf.Abs(rb.velocity.x) < 3f)
+            {
+                SetAnim(attack);
+                attacking = true;
+                Invoke("AttackingRelease", 0.5f);
+                move_speed = 0.5f;
+            }
+            else
+            {
+                SetAnim(jattack);
+                jattacking = true;
+                Invoke("JAttackingRelease", 0.6f);
+                rb.gravityScale = 0.8f;
+                rb.velocity = new Vector2(6 * (sr.flipX ? -1 : 1), 3/*rb.velocity.y*/);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Z) && !hurting)
