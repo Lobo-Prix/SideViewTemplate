@@ -14,5 +14,9 @@ public abstract class Actor : MonoBehaviour
 
     }
 
-    public abstract void AddDamage();
+    public int scaffold_col = 0;
+    public int left_col = 0;
+    public int right_col = 0;
+
+    public abstract void AddDamage(Actor from);
 }

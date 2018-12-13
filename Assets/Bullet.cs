@@ -24,6 +24,9 @@ public class Bullet : MonoBehaviour {
     {
         Actor target = (Actor)collision.GetComponent(target_component);
         if (target)
-            target.AddDamage();
+        {
+            target.AddDamage(from);
+            Destroy(gameObject);
+        }
     }
 }

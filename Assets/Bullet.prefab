@@ -100,7 +100,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   from: {fileID: 0}
-  target_component: Player
+  target_component: 
+  lifetime: 0
 --- !u!212 &212359732974392320
 SpriteRenderer:
   m_ObjectHideFlags: 1

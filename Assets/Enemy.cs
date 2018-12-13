@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Actor
+public class Enemy : Actor
 {
     public Sprite[] idle, walk, jump, attack, hurt, jattack;
     public Bullet pfBullet;
@@ -73,13 +73,13 @@ public class Player : Actor
         if (hurting || jattacking)
             return;
 
-        float lrbias = Input.GetAxis("Horizontal");
-        //if jump control should not allow, move this code to not jump block.
-        if (lrbias > 0 && RightColl() && !IsGrand()
-            || lrbias < 0 && LeftColl() && !IsGrand())
+        //float lrbias = Input.GetAxis("Horizontal");
+        ////if jump control should not allow, move this code to not jump block.
+        if (!IsGrand())
             ;
         else
-            rb.velocity = new Vector2(lrbias * 2 * move_speed * (IsRunning() ? 2 : 1), rb.velocity.y);
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        
 
         //jumping
         if (!IsGrand())
@@ -92,10 +92,10 @@ public class Player : Actor
             else
                 idx = 1;
 
-            if (lrbias > 0)
-                sr.flipX = false;
-            else if (lrbias < 0)
-                sr.flipX = true;
+            //if (lrbias > 0)
+            //    sr.flipX = false;
+            //else if (lrbias < 0)
+            //    sr.flipX = true;
         }
         //not jump
         else
@@ -103,49 +103,49 @@ public class Player : Actor
             rb.gravityScale = 0;
             rb.velocity = new Vector2(rb.velocity.x, 0);
 
-            if (lrbias > 0)
-            {
-                SetAnim(walk);
-                sr.flipX = false;
-            }
-            else if (lrbias < 0)
-            {
-                SetAnim(walk);
-                sr.flipX = true;
-            }
-            else
+            //if (lrbias > 0)
+            //{
+            //    SetAnim(walk);
+            //    sr.flipX = false;
+            //}
+            //else if (lrbias < 0)
+            //{
+            //    SetAnim(walk);
+            //    sr.flipX = true;
+            //}
+            //else
                 SetAnim(idle);
 
-            if (Input.GetButton("Jump") && rb.velocity.y == 0 && IsGrand())
-            {
-                rb.velocity = new Vector2(rb.velocity.x, 10);
-            }
+            //if (Input.GetButton("Jump") && rb.velocity.y == 0 && IsGrand())
+            //{
+            //    rb.velocity = new Vector2(rb.velocity.x, 10);
+            //}
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && !attacking)
-        {
-            if (Mathf.Abs(rb.velocity.x) < 3f)
-            {
-                SetAnim(attack);
-                attacking = true;
-                Invoke("AttackingRelease", 0.5f);
-                move_speed = 0.5f;
-                Bullet b = Instantiate(pfBullet);
-                b.GetComponent<Rigidbody2D>().velocity = new Vector2(sr.flipX ? -3 : 3, 0);
-                b.from = this;
-                b.lifetime = 0.5f;
-                b.target_component = "Enemy";
-                b.transform.position = transform.position + new Vector3(sr.flipX ? -0.4f : 0.4f, 0.7f, 0);
-            }
-            else
-            {
-                SetAnim(jattack);
-                jattacking = true;
-                Invoke("JAttackingRelease", 0.6f);
-                rb.gravityScale = 0.8f;
-                rb.velocity = new Vector2(6 * (sr.flipX ? -1 : 1), 3/*rb.velocity.y*/);
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.LeftControl) && !attacking)
+        //{
+        //    if (Mathf.Abs(rb.velocity.x) < 3f)
+        //    {
+        //        SetAnim(attack);
+        //        attacking = true;
+        //        Invoke("AttackingRelease", 0.5f);
+        //        move_speed = 0.5f;
+        //        Bullet b = Instantiate(pfBullet);
+        //        b.GetComponent<Rigidbody2D>().velocity = new Vector2(sr.flipX ? -3 : 3, 0);
+        //        b.from = this;
+        //        b.lifetime = 0.5f;
+        //        b.target_component = "Enemy";
+        //        b.transform.position = transform.position + new Vector3(sr.flipX ? -0.4f : 0.4f, 0.7f, 0);
+        //    }
+        //    else
+        //    {
+        //        SetAnim(jattack);
+        //        jattacking = true;
+        //        Invoke("JAttackingRelease", 0.6f);
+        //        rb.gravityScale = 0.8f;
+        //        rb.velocity = new Vector2(6 * (sr.flipX ? -1 : 1), 3/*rb.velocity.y*/);
+        //    }
+        //}
     }
 	
 	void Animate () {
