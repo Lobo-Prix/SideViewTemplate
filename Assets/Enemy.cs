@@ -10,14 +10,11 @@ public class Enemy : Actor
     Sprite[] cur_anim;
     int idx = 0;
 
-    Rigidbody2D rb;
-
-	void Start () {
+	protected override void Start () {
+        base.Start();
         sr = GetComponentInChildren<SpriteRenderer>();
         cur_anim = idle;
         InvokeRepeating("Animate", 0, 0.1f);
-
-        rb = GetComponent<Rigidbody2D>();
 	}
 
     float prev_keydown_time, cur_keydown_time = -1;
@@ -68,8 +65,9 @@ public class Enemy : Actor
     bool jattacking = false;
     void JAttackingRelease() { jattacking = false; }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         if (hurting || jattacking)
             return;
 
