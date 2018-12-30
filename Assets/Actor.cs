@@ -8,11 +8,26 @@ public abstract class Actor : MonoBehaviour
     Collider2D coll;
     Vector3 ppos;
 
+    protected Rigidbody2D rb;
+
+    protected SpriteRenderer sr;
+    protected Sprite[] cur_anim;
+    protected int idx = 0;
+
+    protected bool anim_freeze = false;
+
+    public int scaffold_col = 0;
+    public int left_col = 0;
+    public int right_col = 0;
+
     protected virtual void Start()
     {
         ppos = transform.position;
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
+        sr = GetComponentInChildren<SpriteRenderer>();
+        InvokeRepeating("Animate", 0, 0.1f);
+
     }
 
     protected virtual void Update()
@@ -32,9 +47,34 @@ public abstract class Actor : MonoBehaviour
         ppos = transform.position;
     }
 
-    public int scaffold_col = 0;
-    public int left_col = 0;
-    public int right_col = 0;
+    void Animate()
+    {
+        sr.sprite = cur_anim[idx = (idx + 1) % cur_anim.Length];
+    }
+
+    protected void SetAnim(Sprite[] anim)
+    {
+        if (anim_freeze)
+            return;
+        if (cur_anim == anim)
+            return;
+        cur_anim = anim;
+        idx = 0;
+    }
 
     public abstract void AddDamage(Actor from);
+
+    protected bool IsGrand()
+    {
+        return scaffold_col > 0;
+    }
+    protected bool LeftColl()
+    {
+        return left_col > 0;
+    }
+
+    protected bool RightColl()
+    {
+        return right_col > 0;
+    }
 }
