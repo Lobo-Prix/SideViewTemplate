@@ -8,8 +8,6 @@ public abstract class Actor : MonoBehaviour
     Collider2D coll;
     Vector3 ppos;
 
-    protected Rigidbody2D rb;
-
     protected SpriteRenderer sr;
     protected Sprite[] cur_anim;
     protected int idx = 0;
